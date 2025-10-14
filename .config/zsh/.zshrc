@@ -1,14 +1,7 @@
-#  ╔═╗╔═╗╦ ╦╦═╗╔═╗  ╔═╗╔═╗╔╗╔╔═╗╦╔═╗	- z0mbi3
-#  ╔═╝╚═╗╠═╣╠╦╝║    ║  ║ ║║║║╠╣ ║║ ╦	- https://github.com/gh0stzk/dotfiles
-#  ╚═╝╚═╝╩ ╩╩╚═╚═╝  ╚═╝╚═╝╝╚╝╚  ╩╚═╝	- My zsh conf
-
-#  ┬  ┬┌─┐┬─┐┌─┐
-#  └┐┌┘├─┤├┬┘└─┐
-#   └┘ ┴ ┴┴└─└─┘
-export VISUAL='nvim'
-export EDITOR='nvim'
+export VISUAL='code'
+export EDITOR='code'
 export TERMINAL='kitty'
-export BROWSER='firefox'
+export BROWSER='brave'
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
 export ATAC_KEY_BINDINGS=$HOME/.config/atac/default_key_bindings.toml
 # export ATAC_THEME=$HOME/.config/atac/pastel_dark_theme.toml
@@ -23,7 +16,7 @@ fi
 if command -v bun >/dev/null 2>&1; then
 
 # bun completions
-[ -s "/home/magutierrez/.bun/_bun" ] && source "/home/gutierrez/.bun/_bun"
+[ -s "/home/utech17/.bun/_bun" ] && source "/home/utech17/.bun/_bun"
 
 # bun
 export BUN_INSTALL="$HOME/.bun"
@@ -72,9 +65,9 @@ bindkey "^l" forward-char
 #  ┬ ┬┬┌─┐┌┬┐┌─┐┬─┐┬ ┬
 #  ├─┤│└─┐ │ │ │├┬┘└┬┘
 #  ┴ ┴┴└─┘ ┴ └─┘┴└─ ┴ 
-# HISTFILE=~/.config/zsh/zhistory
-# HISTSIZE=5000
-# SAVEHIST=5000
+HISTFILE=~/.config/zsh/zhistory
+HISTSIZE=5000
+SAVEHIST=5000
 
 #  ┌─┐┌─┐┬ ┬  ┌─┐┌─┐┌─┐┬    ┌─┐┌─┐┌┬┐┬┌─┐┌┐┌┌─┐
 #  ┌─┘└─┐├─┤  │  │ ││ ││    │ │├─┘ │ ││ ││││└─┐
@@ -105,10 +98,10 @@ PS1=' %B%F{blue}󰣛%f%b %B%F{white}%n%f%b $(dir_icon)  %B%F{blue}%~%f%b${vcs_in
 #  ┴  ┴─┘└─┘└─┘┴┘└┘└─┘
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-# source /usr/share/zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
+source /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh
 
-# bindkey '^[[A' history-substring-search-up
-# bindkey '^[[B' history-substring-search-down
+bindkey "$terminfo[kcuu1]" history-substring-search-up
+bindkey "$terminfo[kcud1]" history-substring-search-down
 
 #  ┌─┐┬ ┬┌─┐┌┐┌┌─┐┌─┐  ┌┬┐┌─┐┬─┐┌┬┐┬┌┐┌┌─┐┬  ┌─┐  ┌┬┐┬┌┬┐┬  ┌─┐
 #  │  ├─┤├─┤││││ ┬├┤    │ ├┤ ├┬┘│││││││├─┤│  └─┐   │ │ │ │  ├┤ 
@@ -181,8 +174,11 @@ alias dockerStopService="sudo systemctl stop docker.socket && sudo systemctl sto
 fi
 
 if command -v docker-compose >/dev/null 2>&1; then
-alias dockerUp="docker-compose up -d"
-alias dockerDown="docker-compose down"
+alias docker="docker-compose"
+fi
+
+if command -v podman-compose >/dev/null 2>&1; then
+alias podman="podman-compose"
 fi
 
 if command -v yt-dlp >/dev/null 2>&1; then
@@ -220,6 +216,8 @@ alias dnfgr="sudo ${dnfprog} groupremove"          # Remove package group
 alias dnfc="sudo ${dnfprog} clean all"             # Clean cache
 
 
+alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
+
 fi
 #  ┌─┐┬ ┬┌┬┐┌─┐  ┌─┐┌┬┐┌─┐┬─┐┌┬┐
 #  ├─┤│ │ │ │ │  └─┐ │ ├─┤├┬┘ │ 
@@ -227,9 +225,16 @@ fi
 fastfetch 
 
 # pnpm
-export PNPM_HOME="/home/magutierrez/.local/share/pnpm"
+export PNPM_HOME="/home/utech17/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
+
+#Node
+export NVM_DIR="$HOME/.nvm"
+
+[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+
+[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
