@@ -1,26 +1,24 @@
+#  ╔═╗╔═╗╦ ╦╦═╗╔═╗  ╔═╗╔═╗╔╗╔╔═╗╦╔═╗	- z0mbi3
+#  ╔═╝╚═╗╠═╣╠╦╝║    ║  ║ ║║║║╠╣ ║║ ╦	- https://github.com/gh0stzk/dotfiles
+#  ╚═╝╚═╝╩ ╩╩╚═╚═╝  ╚═╝╚═╝╝╚╝╚  ╩╚═╝	- My zsh conf
+
+#  ┬  ┬┌─┐┬─┐┌─┐
+#  └┐┌┘├─┤├┬┘└─┐
+#   └┘ ┴ ┴┴└─└─┘
 export VISUAL='code'
 export EDITOR='code'
 export TERMINAL='kitty'
 export BROWSER='brave'
 export HISTORY_IGNORE="(ls|cd|pwd|exit|sudo reboot|history|cd -|cd ..)"
-export ATAC_KEY_BINDINGS=$HOME/.config/atac/default_key_bindings.toml
+export ATAC_KEY_BINDINGS=$HOME/.config/atac/vim_key_bindings.toml
 # export ATAC_THEME=$HOME/.config/atac/pastel_dark_theme.toml
+
 if [ -d "$HOME/.bun/bin" ] ;
   then PATH="$HOME/.bun/bin:$PATH"
 fi
 
 if [ -d "$HOME/.local/bin" ] ;
   then PATH="$HOME/.cargo/env:$HOME/.local/bin:$HOME/.cargo/bin:$PATH"
-fi
-
-if command -v bun >/dev/null 2>&1; then
-
-# bun completions
-[ -s "/home/utech17/.bun/_bun" ] && source "/home/utech17/.bun/_bun"
-
-# bun
-export BUN_INSTALL="$HOME/.bun"
-export PATH="$BUN_INSTALL/bin:$PATH"
 fi
 
 #  ┬  ┌─┐┌─┐┌┬┐  ┌─┐┌┐┌┌─┐┬┌┐┌┌─┐
@@ -77,8 +75,8 @@ setopt PROMPT_SUBST        # enable command substitution in prompt
 setopt MENU_COMPLETE       # Automatically highlight first element of completion menu
 setopt LIST_PACKED         # The completion menu takes less space.
 setopt AUTO_LIST           # Automatically list choices on ambiguous completion.
-#setopt HIST_IGNORE_DUPS	   # Do not write events to history that are duplicates of previous events
-#setopt HIST_FIND_NO_DUPS   # When searching history don't display results already cycled through twice
+setopt HIST_IGNORE_DUPS	   # Do not write events to history that are duplicates of previous events
+setopt HIST_FIND_NO_DUPS   # When searching history don't display results already cycled through twice
 setopt COMPLETE_IN_WORD    # Complete from both ends of a word.
 
 #  ┌┬┐┬ ┬┌─┐  ┌─┐┬─┐┌─┐┌┬┐┌─┐┌┬┐
@@ -92,16 +90,17 @@ function dir_icon {
   fi
 }
 NEWLINE=$'\n'
-PS1=' %B%F{blue}󰣛%f%b %B%F{white}%n%f%b $(dir_icon)  %B%F{blue}%~%f%b${vcs_info_msg_0_} %(?.%B%F{green}✓%f%b.%F{red}✗)%f%b $NEWLINE %F{cyan}%f '
+PS1=' %B%F{blue}󰣛%f%b %B%F{white}%n%f%b $(dir_icon)  %B%F{blue}%~%f%b %(?.%B%F{green}✓%f%b.%F{red}✗)%f%b $NEWLINE %F{cyan} '
 #  ┌─┐┬  ┬ ┬┌─┐┬┌┐┌┌─┐
 #  ├─┘│  │ ││ ┬││││└─┐
 #  ┴  ┴─┘└─┘└─┘┴┘└┘└─┘
 source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 source /usr/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source /usr/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+source ~/.zsh/plugins/zsh-history-substring-search/zsh-history-substring-search.zsh
 
-bindkey "$terminfo[kcuu1]" history-substring-search-up
-bindkey "$terminfo[kcud1]" history-substring-search-down
+
+bindkey '^[[A' history-substring-search-up
+bindkey '^[[B' history-substring-search-down
 
 #  ┌─┐┬ ┬┌─┐┌┐┌┌─┐┌─┐  ┌┬┐┌─┐┬─┐┌┬┐┬┌┐┌┌─┐┬  ┌─┐  ┌┬┐┬┌┬┐┬  ┌─┐
 #  │  ├─┤├─┤││││ ┬├┤    │ ├┤ ├┬┘│││││││├─┤│  └─┐   │ │ │ │  ├┤ 
@@ -116,15 +115,6 @@ function xterm_title_preexec () {
 	[[ "$TERM" == 'screen'* ]] && { print -Pn -- '\e_\005{g}%n\005{-}@\005{m}%m\005{-} \005{B}%~\005{-} %# ' && print -n -- "${(q)1}\e\\"; }
 }
 
-function hws() {
-  mkdir {content,scripts,nmap}
-}
-
-function kt-session() {
-  export PROJECT_DIR=$1
-  kitty --session ~/.config/kitty/session.conf > /dev/null 2>&1 &
-}
-
 if [[ "$TERM" == (kitty*|alacritty*|termite*|gnome*|konsole*|kterm*|putty*|rxvt*|screen*|tmux*|xterm*) ]]; then
 	add-zsh-hook -Uz precmd xterm_title_precmd
 	add-zsh-hook -Uz preexec xterm_title_preexec
@@ -133,66 +123,42 @@ fi
 #  ┌─┐┬  ┬┌─┐┌─┐
 #  ├─┤│  │├─┤└─┐
 #  ┴ ┴┴─┘┴┴ ┴└─┘
+alias mirrors="sudo reflector --verbose --latest 5 --country 'United States' --age 6 --sort rate --save /etc/pacman.d/mirrorlist"
+
 alias grub-update="sudo grub-mkconfig -o /boot/grub/grub.cfg"
+# alias mantenimiento="yay -Sc && sudo pacman -Scc"
+# alias purga="sudo pacman -Rns $(pacman -Qtdq) ; sudo fstrim -av"
+# alias update="paru -Syu --nocombinedupgrade"
 
-if command -v ncmpcpp >/dev/null 2>&1; then
+alias vm-on="sudo systemctl start libvirtd.service"
+alias vm-off="sudo systemctl stop libvirtd.service"
+
 alias musica="ncmpcpp"
-fi
-if command -v duf >/dev/null 2>&1; then
 alias df='duf'
-fi
-
-if command -v lsd >/dev/null 2>&1; then
-alias ls='lsd'
-alias ll='ls -lh --group-dirs=first'
-alias la='ls -a --group-dirs=first'
-alias lla='ls -lha --group-dirs=first'
-alias lt='ls --tree'
-fi
-
-if command -v bat >/dev/null 2>&1; then
+alias ll='lsd -lh --group-dirs=first'
+alias la='lsd -a --group-dirs=first'
+alias l='lsd --group-dirs=first'
+alias lla='lsd -lha --group-dirs=first'
+alias ls='lsd --group-dirs=first'
 alias cat='bat'
-fi
-
-
-if command -v fastfetch >/dev/null 2>&1; then
+alias anti='antigravity'
+alias catn='cat'
 alias clear="clear && fastfetch"
-fi
-
-if command -v lazygit >/dev/null 2>&1; then
-alias lg="lazygit"
-fi
-
+alias kmComponent="cd $HOME/git/km-component/ && nvim"
 alias ga="git add"
 alias gc="git commit"
 alias gs="git status"
 alias glg="git log --graph"
-
-if command -v docker >/dev/null 2>&1; then
 alias dockerStartService="sudo systemctl start docker && sudo systemctl start docker.socket"
 alias dockerStopService="sudo systemctl stop docker.socket && sudo systemctl stop docker"
-fi
+alias dockerUp="docker-compose up -d"
+alias dockerDown="docker-compose down"
+alias tomcat-up='/opt/tomcat/bin/startup.sh'
+alias tomcat-down='/opt/tomcat/bin/shutdown.sh'
+alias tomcat-restart='bash -c "/opt/tomcat/bin/shutdown.sh; sleep 2; /opt/tomcat/bin/startup.sh"'
+alias tomcat-deploy="~/bashScript/tomcat-deploy.sh"
 
-if command -v docker-compose >/dev/null 2>&1; then
-alias docker="docker-compose"
-fi
-
-if command -v podman-compose >/dev/null 2>&1; then
-alias podman="podman-compose"
-fi
-
-if command -v yt-dlp >/dev/null 2>&1; then
-alias yt="yt-dlp"
-alias yt-audio="yt-dlp --extract-audio --audio-format mp3"
-alias yt-playlist="yt-dlp --extract-audio --audio-format mp3 -o \"%(title)s.%(ext)s\""
-fi
 alias icat="kitty +kitten icat"
-
-if command -v zellij >/dev/null 2>&1; then
-alias zs="zellij attach"
-alias z="zellij"
-fi
-
 if command -v dnf >/dev/null 2>&1; then
 ## Aliases
 
@@ -216,25 +182,40 @@ alias dnfgr="sudo ${dnfprog} groupremove"          # Remove package group
 alias dnfc="sudo ${dnfprog} clean all"             # Clean cache
 
 
-alias sail='sh $([ -f sail ] && echo sail || echo vendor/bin/sail)'
-
 fi
 #  ┌─┐┬ ┬┌┬┐┌─┐  ┌─┐┌┬┐┌─┐┬─┐┌┬┐
 #  ├─┤│ │ │ │ │  └─┐ │ ├─┤├┬┘ │ 
 #  ┴ ┴└─┘ ┴ └─┘  └─┘ ┴ ┴ ┴┴└─ ┴ 
 fastfetch 
+# $HOME/.local/bin/colorscript -r
+
+# bun completions
+[ -s "/home/magutierrez/.bun/_bun" ] && source "/home/magutierrez/.bun/_bun"
+
+PATH=~/.console-ninja/.bin:$PATH
 
 # pnpm
-export PNPM_HOME="/home/utech17/.local/share/pnpm"
+export PNPM_HOME="/home/magutierrez/.local/share/pnpm"
 case ":$PATH:" in
   *":$PNPM_HOME:"*) ;;
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 # pnpm end
 
-#Node
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
 export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+export PATH="$HOME/flutter/bin:$PATH"
+export ANDROID_HOME=/opt/android-studio/sdk
+export PATH=$PATH:$ANDROID_HOME/cmdline-tools/tools/bin:$ANDROID_HOME/platform-tools
 
-[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-
-[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion"
+export PATH="$PATH:/opt/android-studio/sdk/cmdline-tools/tools/bin"
+echo 'export ANDROID_HOME=/opt/android-studio/sdk
+export ANDROID_SDK_ROOT=/opt/android-studio/sdk
+export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin"' >> ~/.zshrc
+export ANDROID_HOME=/opt/android-studio/sdk
+export ANDROID_SDK_ROOT=/opt/android-studio/sdk
+export PATH="$PATH:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin"
